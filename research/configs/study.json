@@ -1,0 +1,72 @@
+{
+  "id": "commons-g1-22m-v1",
+  "status": "PLANNED_NOT_EXECUTED",
+  "model_parameters": 22029696,
+  "model_config": "model22m.hf.json",
+  "dataset": {
+    "repository": "roneneldan/TinyStories",
+    "revision": "f54c09fd23315a6f9c86f9dc80f725de7d8f9c64",
+    "license_on_card": "cdla-sharing-1.0",
+    "source_bytes_downloaded": false,
+    "tokenizer_sha256": null,
+    "prepared_manifest_sha256": null,
+    "prerequisites_complete": false
+  },
+  "learners": 4,
+  "context": 512,
+  "microbatch_sequences": 2,
+  "local_accumulation_steps": 4,
+  "targets_per_local_step": 4096,
+  "targets_per_global_step": 16384,
+  "screen_target_tokens": 16777216,
+  "confirmation_target_tokens": 100663296,
+  "confirmation_seeds": [
+    11,
+    23,
+    37
+  ],
+  "methods": [
+    "single_global_batch_AdamW",
+    "local_FedAvg_H8",
+    "DiLoCo_style_H8",
+    "DiLoCo_style_H32"
+  ],
+  "inner": {
+    "optimizer": "AdamW",
+    "lr": 0.0004,
+    "betas": [
+      0.9,
+      0.95
+    ],
+    "eps": 1e-08,
+    "weight_decay": 0.1,
+    "clip_norm": 1.0,
+    "warmup_token_fraction": 0.05,
+    "schedule": "cosine_to_0.1_peak"
+  },
+  "outer": {
+    "optimizer": "Nesterov_SGD",
+    "lr": 0.7,
+    "momentum": 0.9,
+    "dampening": 0,
+    "delta_sign": "parent_minus_local",
+    "aggregation": "actual_target_token_weighted",
+    "preserve_inner_moments": true,
+    "accepted_staleness": 0
+  },
+  "confirmation_gates": {
+    "mean_excess_nll_nats_max": 0.03,
+    "worst_seed_excess_nll_nats_max": 0.06,
+    "measured_WAN_exchange_bytes_reduction_min": 4,
+    "measured_WAN_time_to_quality_speedup_min": 1.25,
+    "margins_are_engineering_choices": true
+  },
+  "budgets": {
+    "calibration_minutes_max": 15,
+    "initial_owner_gpu_hours_max": 2,
+    "paid_external_compute": false,
+    "public_training": false,
+    "store_publication": false
+  },
+  "prerequisite_policy": "Null hashes explicitly block G1; do not substitute generated sequences."
+}

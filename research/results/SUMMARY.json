@@ -1,0 +1,168 @@
+{
+  "revision": "research-v1-20260917",
+  "created_date": "2026-09-17",
+  "test_counts": {
+    "run": 33,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "execution_environment": {
+    "host": "assistant Linux CPU environment, not owner PC/GPU",
+    "python": "3.13.5",
+    "torch": "2.10.0+cpu",
+    "threads": 2
+  },
+  "probe": {
+    "scope": "one device; FP32; 128-token repeated random batch; shape/gradient/update probe only",
+    "parameters": 22029696,
+    "model": {
+      "vocab_size": 8192,
+      "width": 384,
+      "layers": 12,
+      "heads": 6,
+      "kv_heads": 2,
+      "ff_width": 1024,
+      "context": 512,
+      "rope_theta": 10000.0,
+      "norm_eps": 1e-06
+    },
+    "steps": 3,
+    "losses": [
+      9.050559997558594,
+      8.551023483276367,
+      8.555021286010742
+    ],
+    "elapsed_seconds_including_initialization": 2.1984020690000534,
+    "device": "cpu",
+    "torch": "2.10.0+cpu",
+    "python": "3.13.5",
+    "peak_cuda_allocated_bytes": null,
+    "gpu_6gb_fit_verified": false,
+    "natural_language_training": false,
+    "limitations": [
+      "sequence 512 throughput not measured",
+      "not a held-out-quality result",
+      "no multi-host run"
+    ]
+  },
+  "fixture_comparison": [
+    {
+      "method": "single",
+      "local_steps": 8,
+      "seeds": [
+        11,
+        23,
+        37
+      ],
+      "mean_nll": 0.8406813542048136,
+      "sample_sd_nll": 0.014550668068837383,
+      "per_seed_excess_nll": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "mean_excess_nll": 0.0,
+      "worst_excess_nll": 0.0
+    },
+    {
+      "method": "fedavg",
+      "local_steps": 8,
+      "seeds": [
+        11,
+        23,
+        37
+      ],
+      "mean_nll": 0.9973368644714355,
+      "sample_sd_nll": 0.007493673396103015,
+      "per_seed_excess_nll": [
+        0.15013432502746582,
+        0.17721277475357056,
+        0.14261943101882935
+      ],
+      "mean_excess_nll": 0.15665551026662192,
+      "worst_excess_nll": 0.17721277475357056
+    },
+    {
+      "method": "diloco",
+      "local_steps": 8,
+      "seeds": [
+        11,
+        23,
+        37
+      ],
+      "mean_nll": 0.8740997910499573,
+      "sample_sd_nll": 0.043427356247694414,
+      "per_seed_excess_nll": [
+        -0.010713517665863037,
+        0.09908175468444824,
+        0.011887073516845703
+      ],
+      "mean_excess_nll": 0.03341843684514364,
+      "worst_excess_nll": 0.09908175468444824
+    },
+    {
+      "method": "diloco",
+      "local_steps": 32,
+      "seeds": [
+        11,
+        23,
+        37
+      ],
+      "mean_nll": 0.9470158219337463,
+      "sample_sd_nll": 0.032295040563677976,
+      "per_seed_excess_nll": [
+        0.06741362810134888,
+        0.15822070837020874,
+        0.09336906671524048
+      ],
+      "mean_excess_nll": 0.1063344677289327,
+      "worst_excess_nll": 0.15822070837020874
+    }
+  ],
+  "fixture_scope": "12 single-process CPU runs, 102720-parameter reference, content-separated generated integer sequences, 32768 targets/run, no physical network",
+  "observations": [
+    "All four methods reduce held-out fixture NLL from initialization.",
+    "H8 DiLoCo-style was closer to single-model quality than FedAvg H8 in the three fixture seeds.",
+    "H32 further reduced the number of exchange events but worsened fixture NLL.",
+    "Neither tested DiLoCo configuration consistently matched single-model quality. Do not promote a distributed quality/speedup claim.",
+    "The initial seed-only synthetic split check found duplicate content; the final runs use content-hash split assignment and were rerun."
+  ],
+  "G1_plan": {
+    "plan_valid": true,
+    "G1_execution_ready": false,
+    "blocking_prerequisites": [
+      "tokenizer_sha256",
+      "prepared_manifest_sha256",
+      "reviewed_data_preparation"
+    ],
+    "screen_global_steps": 1024,
+    "confirmation_global_steps": 6144,
+    "scope": "validation only; this function cannot launch training"
+  },
+  "decision": "Implementation basis exists; prepare verified data/tokenizer and resume/calibration next. No G1/G2/G3 pass claimed.",
+  "limitations": [
+    "No natural-language training run",
+    "No measured GPU throughput or 6GB admission",
+    "No Hivemind/TFF/Pathways integration",
+    "No complete optimizer resume test",
+    "No real WAN or distributed consensus test",
+    "No Store upload or X post"
+  ],
+  "code_sha256": {
+    "research/commons_lab/__init__.py": "89774127712bf70f91079beeacb8913da80f30646ce8c46cc08b44fa567e21ca",
+    "research/commons_lab/config.py": "39380bb583b73a7ab69c55706eb02a79c49cbf0d767bd9245992fcb58d3cddd1",
+    "research/commons_lab/model.py": "5ee23c433096e9acceacc4ba68b213e2217770297a633d8d4187a4d8abe681e4",
+    "research/commons_lab/plan.py": "41350d65e2520812325689830b7ea41285494b5bb1e73b389901fdec49bf17fa",
+    "research/commons_lab/probe.py": "9c27a611c064d223b4cb0f6870fb70f138bc9adfc13f888bee24029ab24a7587",
+    "research/commons_lab/protocol.py": "5f0765dd5642b0d560bc6b826244086eccc34bac5a4c9bb5f7d348bd0817327c",
+    "research/commons_lab/sanity.py": "9d05ecceb04965a9c19962d186b071c6f184963d261b52d48636433856852238",
+    "research/tests/test_contracts.py": "e302eb5d99407d551896b47761d04e201dabc081d958d80278c3704d64b507b5",
+    "research/tests/test_torch_reference.py": "38f2f00d83ad7eac17e67e869052dd35f8249a22dc5db29684f910b13750361d"
+  },
+  "format_only_change": {
+    "file": "research/commons_lab/config.py",
+    "original_measured_sha256": "c61a27c288a57e1925a13edcff35ed5278d8314653f6b523872119110107cd6e",
+    "change": "Removed a trailing empty line before publication; no behavior change. Reference tests rerun."
+  }
+}

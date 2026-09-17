@@ -1,0 +1,55 @@
+{
+  "scope": "one CPU process; sequential logical learners; generated integer sequences; no real WAN/English training",
+  "method": "diloco",
+  "seed": 37,
+  "model": {
+    "vocab_size": 64,
+    "width": 64,
+    "layers": 2,
+    "heads": 4,
+    "kv_heads": 2,
+    "ff_width": 192,
+    "context": 32,
+    "rope_theta": 10000.0,
+    "norm_eps": 1e-06
+  },
+  "parameters": 102720,
+  "completed": true,
+  "logical_workers": 4,
+  "local_steps": 32,
+  "local_optimizer_steps_per_worker": 128,
+  "processed_target_tokens": 32768,
+  "initial_nll": 4.190258979797363,
+  "final_nll": 0.9394381046295166,
+  "elapsed_cpu_wall_seconds": 2.8764633879999906,
+  "runtime_limit_scope": "checked before each local step; not an OS-enforced hard deadline",
+  "estimated_fp32_star_payload_bytes": 13148160,
+  "payload_scope": "formula only; excludes TCP/TLS/retry/metadata; single mode has no transport",
+  "torch": "2.10.0+cpu",
+  "python": "3.13.5",
+  "history": [
+    {
+      "tokens": 8192,
+      "validation_nll": 1.8595343828201294
+    },
+    {
+      "tokens": 16384,
+      "validation_nll": 1.27069890499115
+    },
+    {
+      "tokens": 24576,
+      "validation_nll": 1.1154392957687378
+    },
+    {
+      "tokens": 32768,
+      "validation_nll": 0.9394381046295166
+    }
+  ],
+  "not_demonstrated": [
+    "natural-language convergence",
+    "distributed speedup",
+    "GPU performance",
+    "Byzantine robustness",
+    "public deployment"
+  ]
+}

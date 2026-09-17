@@ -1,0 +1,103 @@
+{
+  "scope": "one CPU process; sequential logical learners; generated integer sequences; no real WAN/English training",
+  "method": "single",
+  "seed": 37,
+  "model": {
+    "vocab_size": 64,
+    "width": 64,
+    "layers": 2,
+    "heads": 4,
+    "kv_heads": 2,
+    "ff_width": 192,
+    "context": 32,
+    "rope_theta": 10000.0,
+    "norm_eps": 1e-06
+  },
+  "parameters": 102720,
+  "completed": true,
+  "logical_workers": 4,
+  "local_steps": 8,
+  "local_optimizer_steps_per_worker": 128,
+  "processed_target_tokens": 32768,
+  "initial_nll": 4.190258979797363,
+  "final_nll": 0.8460690379142761,
+  "elapsed_cpu_wall_seconds": 1.9928269069999942,
+  "runtime_limit_scope": "checked before each local step; not an OS-enforced hard deadline",
+  "estimated_fp32_star_payload_bytes": 0,
+  "payload_scope": "formula only; excludes TCP/TLS/retry/metadata; single mode has no transport",
+  "torch": "2.10.0+cpu",
+  "python": "3.13.5",
+  "history": [
+    {
+      "tokens": 2048,
+      "validation_nll": 3.2038002014160156
+    },
+    {
+      "tokens": 4096,
+      "validation_nll": 2.5734705924987793
+    },
+    {
+      "tokens": 6144,
+      "validation_nll": 2.107449769973755
+    },
+    {
+      "tokens": 8192,
+      "validation_nll": 1.7796270847320557
+    },
+    {
+      "tokens": 10240,
+      "validation_nll": 1.553978681564331
+    },
+    {
+      "tokens": 12288,
+      "validation_nll": 1.3994357585906982
+    },
+    {
+      "tokens": 14336,
+      "validation_nll": 1.2679799795150757
+    },
+    {
+      "tokens": 16384,
+      "validation_nll": 1.2002136707305908
+    },
+    {
+      "tokens": 18432,
+      "validation_nll": 1.1012399196624756
+    },
+    {
+      "tokens": 20480,
+      "validation_nll": 1.0618516206741333
+    },
+    {
+      "tokens": 22528,
+      "validation_nll": 0.9774169325828552
+    },
+    {
+      "tokens": 24576,
+      "validation_nll": 0.969947099685669
+    },
+    {
+      "tokens": 26624,
+      "validation_nll": 0.9172088503837585
+    },
+    {
+      "tokens": 28672,
+      "validation_nll": 0.881190299987793
+    },
+    {
+      "tokens": 30720,
+      "validation_nll": 0.8804564476013184
+    },
+    {
+      "tokens": 32768,
+      "validation_nll": 0.8460690379142761
+    }
+  ],
+  "not_demonstrated": [
+    "natural-language convergence",
+    "distributed speedup",
+    "GPU performance",
+    "Byzantine robustness",
+    "public deployment"
+  ]
+}
