@@ -48,6 +48,9 @@ jobs:
           python3 -m pip install 'playwright==1.57.0'
           python3 -m playwright install --with-deps chromium
           python3 browser_test.py
+      - name: Public site layouts, localization and interactions
+        if: runner.os == 'Linux'
+        run: python3 scripts/site_acceptance.py
       - name: Check packaging and synchronized website
         if: runner.os == 'Linux'
         run: |
