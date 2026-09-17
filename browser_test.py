@@ -1,6 +1,6 @@
 import pathlib,subprocess,tempfile,json,time,os
 from urllib.parse import urlsplit
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import sync_playwright, expect
 root=pathlib.Path(__file__).resolve().parent
 out=root/'preview';out.mkdir(exist_ok=True)
 with tempfile.TemporaryDirectory(prefix='keyai-browser-') as d:
@@ -15,14 +15,14 @@ with tempfile.TemporaryDirectory(prefix='keyai-browser-') as d:
    browser=pw.chromium.launch(headless=True,executable_path=os.environ.get('COMMONS_BROWSER'),args=['--no-sandbox']);ctx=browser.new_context(viewport={'width':1440,'height':1040},device_scale_factor=1)
    errors=[];a=ctx.new_page();u=ctx.new_page()
    for page in [a,u]:page.on('pageerror',lambda e:errors.append(str(e)))
-   a.goto(admin);u.goto(client);u.wait_for_function("document.getElementById('connection').textContent==='Connected'")
+   a.goto(admin);u.goto(client);expect(u.locator('#connection')).to_have_text('Connected', timeout=30000)
    assert u.locator('#allow').is_disabled()
    u.locator('#agree').check();u.locator('#allow').click()
-   a.wait_for_function("document.getElementById('ready').textContent==='1'")
-   a.locator('#start').click();u.wait_for_function("document.getElementById('status').textContent==='Training an approved task'")
+   expect(a.locator('#ready')).to_have_text('1', timeout=30000)
+   a.locator('#start').click();expect(u.locator('#status')).to_have_text('Training an approved task', timeout=30000)
    time.sleep(.6);u.screenshot(path=str(out/'participant.png'),full_page=True)
-   a.wait_for_function("document.getElementById('modelversion').textContent==='Version 1'",timeout=20000);a.screenshot(path=str(out/'operator.png'),full_page=True)
-   u.locator('#pause').click();u.wait_for_function("document.getElementById('status').textContent==='Paused. You are in control.'")
+   expect(a.locator('#modelversion')).to_have_text('Version 1', timeout=30000);a.screenshot(path=str(out/'operator.png'),full_page=True)
+   u.locator('#pause').click();expect(u.locator('#status')).to_have_text('Paused. You are in control.', timeout=10000)
    u.set_viewport_size({'width':390,'height':844});u.screenshot(path=str(out/'participant-mobile.png'),full_page=True)
    assert u.evaluate('document.documentElement.scrollWidth <= innerWidth+1'),'mobile horizontal overflow'
    assert not errors,errors
