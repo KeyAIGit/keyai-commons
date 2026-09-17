@@ -1,0 +1,17 @@
+services:
+  coordinator:
+    build:
+      context: ..
+    command: ["coordinator", "--listen", "0.0.0.0:7860", "--data", "/state", "--public-url", "${COMMONS_PUBLIC_URL:?set HTTPS public URL}", "--operator-key", "${COMMONS_OPERATOR_PUBLIC_KEY:?set public key, never private key}", "--no-browser"]
+    restart: unless-stopped
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    pids_limit: 64
+    mem_limit: 256m
+    cpus: 1.0
+    ports: ["127.0.0.1:7860:7860"]
+    volumes: ["commons-state:/state"]
+volumes:
+  commons-state:

@@ -1,0 +1,69 @@
+{
+  "passed": 13,
+  "checks": [
+    {
+      "name": "Three separate participant processes register",
+      "pass": true
+    },
+    {
+      "name": "Launch does not grant consent",
+      "pass": true
+    },
+    {
+      "name": "Operator command alone cannot start clients",
+      "pass": true
+    },
+    {
+      "name": "Ready clients remain idle without a campaign",
+      "pass": true
+    },
+    {
+      "name": "Signed campaign starts all three clients",
+      "pass": true
+    },
+    {
+      "name": "Three real processes produce one aggregate",
+      "pass": true
+    },
+    {
+      "name": "Global model loss decreases",
+      "pass": true
+    },
+    {
+      "name": "Global model hash changes",
+      "pass": true
+    },
+    {
+      "name": "No double contribution",
+      "pass": true
+    },
+    {
+      "name": "Local pause cancels an in-flight job",
+      "pass": true
+    },
+    {
+      "name": "Operator stop reaches remaining processes",
+      "pass": true
+    },
+    {
+      "name": "Stopped round does not mutate the model",
+      "pass": true
+    },
+    {
+      "name": "Exit shuts down participant processes",
+      "pass": true
+    }
+  ],
+  "before": {
+    "loss": 0.7094329053811904,
+    "accuracy": 0.516357421875
+  },
+  "after": {
+    "loss": 0.18718569477603828,
+    "accuracy": 0.9892578125,
+    "model_version": 1,
+    "participants": 3
+  },
+  "pause_observed_ms": 5.1,
+  "scope": "3 processes on one Linux host; not 3 physical computers; CPU synthetic workload"
+}

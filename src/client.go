@@ -21,6 +21,8 @@ type SavedClient struct {
 }
 type Client struct {
 	mu           sync.Mutex
+	connecting   bool
+	duty         int
 	dir          string
 	saved        SavedClient
 	consent      bool
@@ -48,7 +50,7 @@ func newClient(ctx context.Context, dir string) (*Client, error) {
 		return nil, e
 	}
 	done, shutdown := context.WithCancel(ctx)
-	c := &Client{dir: dir, http: newHTTPClient(), status: "not_connected", completed: map[string]bool{}, done: done, shutdown: shutdown}
+	c := &Client{duty: 25, dir: dir, http: newHTTPClient(), status: "not_connected", completed: map[string]bool{}, done: done, shutdown: shutdown}
 	b, e := os.ReadFile(filepath.Join(dir, "client-private.json"))
 	if e == nil {
 		if e = json.Unmarshal(b, &c.saved); e != nil {
@@ -76,11 +78,17 @@ func (c *Client) connect(code string) error {
 		return e
 	}
 	c.mu.Lock()
-	if c.busy || c.consent {
+	if c.busy || c.consent || c.connecting {
 		c.mu.Unlock()
 		return errors.New("pause participation before changing network")
 	}
+	if c.saved.Token != "" && c.saved.Config == conf {
+		c.mu.Unlock()
+		return nil
+	}
+	c.connecting = true
 	c.mu.Unlock()
+	defer func() { c.mu.Lock(); c.connecting = false; c.mu.Unlock() }()
 	var joined JoinResponse
 	if e = postJSON(c.http, conf.URL+"/v1/join", "", JoinRequest{conf.Invite, runtime.GOOS, runtime.GOARCH}, &joined); e != nil {
 		return e
@@ -104,11 +112,14 @@ func (c *Client) connect(code string) error {
 func (c *Client) allow(minutes int) error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	if c.saved.Token == "" {
-		return errors.New("join a network first")
+	if c.saved.Token == "" || c.connecting {
+		return errors.New("finish joining a network first")
 	}
 	if minutes < 1 || minutes > 60 {
 		return errors.New("choose between 1 and 60 minutes")
+	}
+	if c.consent || c.busy {
+		return errors.New("pause before changing session duration")
 	}
 	c.consent = true
 	c.consentUntil = time.Now().Add(time.Duration(minutes) * time.Minute)
@@ -244,7 +255,10 @@ func (c *Client) tick() {
 }
 func (c *Client) perform(ctx context.Context, j Job, cancel context.CancelFunc, token string) {
 	defer cancel()
-	w, e := trainModel(ctx, j.Weights, j.Seed, j.Steps, true, func(i int) { c.mu.Lock(); c.progress = i; c.mu.Unlock() })
+	c.mu.Lock()
+	duty := c.duty
+	c.mu.Unlock()
+	w, e := trainWithDuty(ctx, j.Weights, j.Seed, j.Steps, duty, func(i int) { c.mu.Lock(); c.progress = i; c.mu.Unlock() })
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	c.busy = false
@@ -282,7 +296,7 @@ func (c *Client) handler(host, token string) http.Handler {
 	m.HandleFunc("GET /api/status", func(w http.ResponseWriter, r *http.Request) {
 		c.mu.Lock()
 		defer c.mu.Unlock()
-		writeJSON(w, 200, map[string]any{"version": version, "status": c.status, "connected": c.saved.Token != "", "network_url": c.saved.Config.URL, "public_key": c.saved.Config.PublicKey, "node_id": c.saved.NodeID, "consent": c.consent, "consent_until": c.consentUntil.Unix(), "busy": c.busy, "round": c.round, "progress": c.progress, "total": c.total, "accepted_this_session": c.accepted, "model_version": c.modelVersion, "last_error": c.lastError, "last_contact": c.lastContact.Unix(), "platform": runtime.GOOS + "/" + runtime.GOARCH, "model": modelID, "parameters": weightCount, "gpu_enabled": false, "internet_enabled": modernToolchain(), "toolchain": runtime.Version()})
+		writeJSON(w, 200, map[string]any{"version": version, "status": c.status, "connected": c.saved.Token != "", "network_url": c.saved.Config.URL, "public_key": c.saved.Config.PublicKey, "node_id": c.saved.NodeID, "consent": c.consent, "consent_until": c.consentUntil.Unix(), "busy": c.busy, "round": c.round, "progress": c.progress, "total": c.total, "accepted_this_session": c.accepted, "model_version": c.modelVersion, "last_error": c.lastError, "last_contact": c.lastContact.Unix(), "platform": runtime.GOOS + "/" + runtime.GOARCH, "model": modelID, "parameters": weightCount, "gpu_enabled": false, "cpu_duty_target": c.duty, "connecting": c.connecting, "reachable": !c.lastContact.IsZero() && time.Since(c.lastContact) < 15*time.Second, "internet_enabled": modernToolchain(), "toolchain": runtime.Version()})
 	})
 	m.HandleFunc("POST /api/connect", func(w http.ResponseWriter, r *http.Request) {
 		var q struct {
@@ -298,6 +312,9 @@ func (c *Client) handler(host, token string) http.Handler {
 		}
 		writeJSON(w, 200, map[string]bool{"connected": true})
 	})
+	m.HandleFunc("POST /api/discover", c.discoverHandler)
+	m.HandleFunc("POST /api/settings", c.settingsHandler)
+	m.HandleFunc("POST /api/forget", c.forgetHandler)
 	m.HandleFunc("POST /api/consent", func(w http.ResponseWriter, r *http.Request) {
 		var q struct {
 			Allow        bool `json:"allow"`
@@ -344,7 +361,11 @@ func runClient(ctx context.Context, dir string, noBrowser bool) (*Client, func()
 		return nil, nil, e
 	}
 	fmt.Println("KeyAI Commons participant | CPU-only research pilot | close this window to stop")
-	fmt.Println("Local dashboard (PRIVATE): " + ui)
+	if !noBrowser {
+		fmt.Println("Local dashboard (PRIVATE): " + ui)
+	} else {
+		fmt.Println("Local dashboard URL saved to local-session-private.json (not logged)")
+	}
 	go func() { _ = server.Serve(ln) }()
 	go c.loop()
 	if !noBrowser {

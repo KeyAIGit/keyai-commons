@@ -2,7 +2,7 @@
 import json, pathlib, subprocess, time, urllib.request, urllib.error, tempfile, sys
 from urllib.parse import urlsplit
 ROOT=pathlib.Path(__file__).resolve().parent
-BIN=ROOT/'keyai-commons'
+BIN=ROOT/('KeyAI-Commons.exe' if sys.platform=='win32' else 'keyai-commons')
 logs=[]; procs=[]; checks=[]
 def wait_file(p,seconds=10):
     deadline=time.monotonic()+seconds

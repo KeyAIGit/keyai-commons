@@ -56,32 +56,44 @@ type Identity struct {
 	Invite     string `json:"invite"`
 }
 type Round struct {
-	Number    int
-	Deadline  int64
-	Jobs      map[string]Job
-	Results   map[string][]float64
-	Verifying map[string]bool
-	Steps     int
-	Goal      int
+	Number     int
+	Deadline   int64
+	Jobs       map[string]Job
+	Results    map[string][]float64
+	Verifying  map[string]bool
+	Steps      int
+	Goal       int
+	Attempts   int
+	Reassigned int
 }
 type Coordinator struct {
-	mu           sync.Mutex
-	dir          string
-	key          ed25519.PrivateKey
-	config       NetworkConfig
-	state        Persistent
-	active       *Round
-	lastError    string
-	joinAttempts map[string][]int64
-	lastPoll     map[string]time.Time
-	verifySlots  chan struct{}
+	mu               sync.Mutex
+	operatorKey      string
+	instance         string
+	publicEnrollment bool
+	enrollmentClosed bool
+	replays          map[string]int64
+	persistence      string
+	authIndex        map[string]*Node
+	metricsVersion   int
+	metricsLoss      float64
+	metricsAccuracy  float64
+	dir              string
+	key              ed25519.PrivateKey
+	config           NetworkConfig
+	state            Persistent
+	active           *Round
+	lastError        string
+	joinAttempts     map[string][]int64
+	lastPoll         map[string]time.Time
+	verifySlots      chan struct{}
 }
 
 func newCoordinator(dir, publicURL string) (*Coordinator, error) {
 	if e := os.MkdirAll(dir, 0700); e != nil {
 		return nil, e
 	}
-	c := &Coordinator{dir: dir, joinAttempts: map[string][]int64{}, lastPoll: map[string]time.Time{}, verifySlots: make(chan struct{}, 2)}
+	c := &Coordinator{instance: randomToken(24), persistence: "local-disk", replays: map[string]int64{}, authIndex: map[string]*Node{}, metricsVersion: -1, dir: dir, joinAttempts: map[string][]int64{}, lastPoll: map[string]time.Time{}, verifySlots: make(chan struct{}, 2)}
 	var id Identity
 	b, e := os.ReadFile(filepath.Join(dir, "identity-private.json"))
 	if os.IsNotExist(e) {
@@ -101,6 +113,9 @@ func newCoordinator(dir, publicURL string) (*Coordinator, error) {
 	key, e := base64.RawURLEncoding.DecodeString(id.PrivateKey)
 	if e != nil || len(key) != 64 {
 		return nil, errors.New("invalid saved server identity")
+	}
+	if !secureEqual(base64.RawURLEncoding.EncodeToString(ed25519.NewKeyFromSeed(key[:32])), id.PrivateKey) {
+		return nil, errors.New("saved signing identity is inconsistent")
 	}
 	c.key = ed25519.PrivateKey(key)
 	c.config = NetworkConfig{strings.TrimRight(publicURL, "/"), publicKeyText(c.key.Public().(ed25519.PublicKey)), id.Invite}
@@ -124,6 +139,10 @@ func newCoordinator(dir, publicURL string) (*Coordinator, error) {
 	}
 	// Restart never resumes a training campaign without another operator command.
 	for _, n := range c.state.Nodes {
+		if n == nil || len(n.TokenHash) != 64 || len(n.ID) < 16 {
+			return nil, errors.New("invalid saved node")
+		}
+		c.authIndex[n.TokenHash] = n
 		n.Ready = false
 		n.LastSeen = 0
 	}
@@ -136,17 +155,16 @@ func (c *Coordinator) saveLocked() error {
 	return atomicJSON(filepath.Join(c.dir, "state-private.json"), c.state)
 }
 func (c *Coordinator) authenticate(r *http.Request) (*Node, bool) {
-	token := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
-	if len(token) < 32 {
+	header := r.Header.Get("Authorization")
+	if !strings.HasPrefix(header, "Bearer ") {
 		return nil, false
 	}
-	hash := tokenHash(token)
-	for _, n := range c.state.Nodes {
-		if secureEqual(n.TokenHash, hash) {
-			return n, true
-		}
+	token := strings.TrimPrefix(header, "Bearer ")
+	if len(token) < 32 || len(token) > 128 {
+		return nil, false
 	}
-	return nil, false
+	n, ok := c.authIndex[tokenHash(token)]
+	return n, ok
 }
 func (c *Coordinator) publicHandler() http.Handler {
 	m := http.NewServeMux()
@@ -158,7 +176,7 @@ func (c *Coordinator) publicHandler() http.Handler {
 		serveAsset(w, "landing.html")
 	})
 	m.HandleFunc("GET /v1/info", func(w http.ResponseWriter, r *http.Request) {
-		writeJSON(w, 200, map[string]any{"name": "KeyAI Commons", "version": version, "model": modelID, "public_key": c.config.PublicKey, "pilot": true, "max_registered_nodes": 256, "max_nodes_per_round": 32})
+		writeJSON(w, 200, map[string]any{"name": "KeyAI Commons", "version": version, "model": modelID, "public_key": c.config.PublicKey, "pilot": true, "max_registered_nodes": 256, "max_nodes_per_round": 32, "instance": c.instance, "operator_public_key": c.operatorKey, "persistence": c.persistence})
 	})
 	m.HandleFunc("GET /v1/status", c.status)
 	m.HandleFunc("GET /v1/model", func(w http.ResponseWriter, r *http.Request) {
@@ -166,6 +184,12 @@ func (c *Coordinator) publicHandler() http.Handler {
 		defer c.mu.Unlock()
 		writeJSON(w, 200, c.state.Model)
 	})
+	m.HandleFunc("GET /v1/connect", c.connectionInfo)
+	m.HandleFunc("GET /healthz", func(w http.ResponseWriter, r *http.Request) {
+		writeJSON(w, 200, map[string]any{"ok": true, "version": version})
+	})
+	m.HandleFunc("POST /v1/leave", c.leave)
+	m.HandleFunc("POST /v1/operator", c.remoteCommand)
 	m.HandleFunc("POST /v1/join", c.join)
 	m.HandleFunc("POST /v1/poll", c.poll)
 	m.HandleFunc("POST /v1/result", c.result)
@@ -179,6 +203,10 @@ func (c *Coordinator) join(w http.ResponseWriter, r *http.Request) {
 	}
 	c.mu.Lock()
 	defer c.mu.Unlock()
+	if c.enrollmentClosed {
+		apiError(w, 403, "enrollment is closed by operator")
+		return
+	}
 	ip, _, _ := net.SplitHostPort(r.RemoteAddr)
 	now := time.Now().Unix()
 	times := c.joinAttempts[ip]
@@ -211,6 +239,7 @@ func (c *Coordinator) join(w http.ResponseWriter, r *http.Request) {
 		apiError(w, 500, "registration could not be persisted")
 		return
 	}
+	c.authIndex[tokenHash(token)] = c.state.Nodes[id]
 	writeJSON(w, 200, JoinResponse{id, token})
 }
 func (c *Coordinator) poll(w http.ResponseWriter, r *http.Request) {
@@ -237,12 +266,13 @@ func (c *Coordinator) poll(w http.ResponseWriter, r *http.Request) {
 	out := PollResponse{State: "waiting", ModelVersion: c.state.Model.Version}
 	if c.active != nil {
 		a := c.active
+		c.reclaimLocked()
 		out.ActiveRound = a.Number
 		out.State = "round_in_progress"
 		if q.Ready {
 			if _, done := a.Results[n.ID]; !done {
 				job, assigned := a.Jobs[n.ID]
-				if !assigned && len(a.Jobs) < a.Goal {
+				if !assigned && len(a.Jobs) < a.Goal && a.Attempts < a.Goal*3 {
 					var seed [8]byte
 					_, _ = rand.Read(seed[:])
 					s := binary.LittleEndian.Uint64(seed[:])
@@ -250,6 +280,7 @@ func (c *Coordinator) poll(w http.ResponseWriter, r *http.Request) {
 						s = 1
 					}
 					job = Job{protocolVersion, modelID, randomToken(18), n.ID, a.Number, c.state.Model.Version, c.state.Model.Hash, append([]float64(nil), c.state.Model.Weights...), s, a.Steps, time.Now().Unix(), a.Deadline}
+					a.Attempts++
 					a.Jobs[n.ID] = job
 					assigned = true
 				}
@@ -336,9 +367,9 @@ func (c *Coordinator) result(w http.ResponseWriter, r *http.Request) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	delete(a.Verifying, nodeID)
-	if c.active != a || time.Now().Unix() >= a.Deadline {
+	if c.active != a || time.Now().Unix() >= a.Deadline || c.state.Nodes[nodeID] != n {
 		c.expireLocked()
-		apiError(w, 409, "round expired during verification")
+		apiError(w, 409, "round expired or participant revoked during verification")
 		return
 	}
 	if !honest {
@@ -416,6 +447,9 @@ func (c *Coordinator) finalizeLocked() error {
 func (c *Coordinator) startRound(steps, goal, seconds int) error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
+	return c.startRoundLocked(steps, goal, seconds)
+}
+func (c *Coordinator) startRoundLocked(steps, goal, seconds int) error {
 	c.expireLocked()
 	if c.active != nil {
 		return errors.New("a round is already active")
@@ -445,12 +479,20 @@ func (c *Coordinator) status(w http.ResponseWriter, r *http.Request) {
 		}
 		contrib += n.Verified
 	}
-	loss, acc := evaluate(c.state.Model.Weights)
+	if c.metricsVersion != c.state.Model.Version {
+		c.metricsLoss, c.metricsAccuracy = evaluate(c.state.Model.Weights)
+		c.metricsVersion = c.state.Model.Version
+	}
+	loss, acc := c.metricsLoss, c.metricsAccuracy
 	active := map[string]any{"running": false}
 	if a := c.active; a != nil {
-		active = map[string]any{"running": true, "number": a.Number, "deadline": a.Deadline, "assigned": len(a.Jobs), "verified": len(a.Results), "target": a.Goal, "steps": a.Steps}
+		active = map[string]any{"running": true, "number": a.Number, "deadline": a.Deadline, "assigned": len(a.Jobs), "verified": len(a.Results), "target": a.Goal, "steps": a.Steps, "reassigned": a.Reassigned, "attempts": a.Attempts}
 	}
-	writeJSON(w, 200, map[string]any{"name": "KeyAI Commons", "version": version, "pilot": true, "model": modelID, "parameters": weightCount, "registered": len(c.state.Nodes), "online": online, "ready": ready, "verified_contributions": contrib, "model_version": c.state.Model.Version, "model_hash": c.state.Model.Hash, "loss": loss, "accuracy": acc, "history": c.state.History, "round": active, "error": c.lastError})
+	history := c.state.History
+	if len(history) > 100 {
+		history = history[len(history)-100:]
+	}
+	writeJSON(w, 200, map[string]any{"name": "KeyAI Commons", "version": version, "pilot": true, "public_enrollment": c.publicEnrollment, "persistence": c.persistence, "max_registered_nodes": 256, "max_nodes_per_round": 32, "model": modelID, "parameters": weightCount, "registered": len(c.state.Nodes), "online": online, "ready": ready, "verified_contributions": contrib, "model_version": c.state.Model.Version, "model_hash": c.state.Model.Hash, "loss": loss, "accuracy": acc, "history": history, "round": active, "error": c.lastError})
 }
 func (c *Coordinator) adminHandler(host, token string) http.Handler {
 	m := http.NewServeMux()
@@ -499,6 +541,15 @@ func (c *Coordinator) adminHandler(host, token string) http.Handler {
 	return secureLocal(m, host, token)
 }
 func runCoordinator(ctx context.Context, dir, listen, publicURL string, noBrowser bool) (*Coordinator, func(), error) {
+	return runCoordinatorWithOptions(ctx, dir, listen, publicURL, noBrowser, CoordinatorOptions{})
+}
+func runCoordinatorWithOptions(ctx context.Context, dir, listen, publicURL string, noBrowser bool, options CoordinatorOptions) (*Coordinator, func(), error) {
+	if options.OperatorKey != "" && !validPublicKey(options.OperatorKey) {
+		return nil, nil, errors.New("invalid operator public key")
+	}
+	if options.Persistence != "" && options.Persistence != "local-disk" && options.Persistence != "ephemeral" {
+		return nil, nil, errors.New("unknown persistence mode")
+	}
 	if e := checkListenBuildPolicy(listen); e != nil {
 		return nil, nil, e
 	}
@@ -518,6 +569,13 @@ func runCoordinator(ctx context.Context, dir, listen, publicURL string, noBrowse
 		listener.Close()
 		return nil, nil, e
 	}
+	c.operatorKey = options.OperatorKey
+	if options.OperatorKey != "" {
+		c.enrollmentClosed = true
+	}
+	if options.Persistence != "" {
+		c.persistence = options.Persistence
+	}
 	admin, e := net.Listen("tcp", "127.0.0.1:0")
 	if e != nil {
 		listener.Close()
@@ -533,7 +591,11 @@ func runCoordinator(ctx context.Context, dir, listen, publicURL string, noBrowse
 		return nil, nil, e
 	}
 	fmt.Println("KeyAI Commons coordinator (bounded pilot, not a public production service)")
-	fmt.Println("Operator dashboard (PRIVATE): " + adminURL)
+	if !noBrowser {
+		fmt.Println("Operator dashboard (PRIVATE): " + adminURL)
+	} else {
+		fmt.Println("Operator dashboard saved to operator-session-private.json (not logged)")
+	}
 	fmt.Println("Network endpoint: " + publicURL)
 	go func() { _ = server.Serve(listener) }()
 	go func() { _ = adminServer.Serve(admin) }()

@@ -1,5 +1,6 @@
 """Build explicit client/source archives. Never includes per-user state or keys."""
 from __future__ import annotations
+raise SystemExit("Legacy v0.1 generator disabled. Use scripts/sync_site.py or scripts/package_release.py.")
 import hashlib,json,os,pathlib,re,shutil,subprocess,zipfile
 ROOT=pathlib.Path(__file__).resolve().parent
 GO=os.environ.get('GO_BINARY','go')

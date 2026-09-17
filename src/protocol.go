@@ -20,7 +20,7 @@ import (
 	"time"
 )
 
-const version = "0.1.0"
+const version = "0.2.0"
 const protocolVersion = 1
 const maxBody = 64 * 1024
 
@@ -118,6 +118,9 @@ func verifyJob(e Envelope, key, nodeID string, now time.Time) (Job, error) {
 }
 func decodeConfig(text string) (NetworkConfig, error) {
 	var c NetworkConfig
+	if len(text) > 6000 {
+		return c, errors.New("connection code too large")
+	}
 	b, e := base64.RawURLEncoding.DecodeString(strings.TrimSpace(text))
 	if e != nil {
 		return c, errors.New("invalid connection code")
@@ -125,7 +128,9 @@ func decodeConfig(text string) (NetworkConfig, error) {
 	if len(b) > 4096 {
 		return c, errors.New("connection code too large")
 	}
-	if e = json.Unmarshal(b, &c); e != nil {
+	decoder := json.NewDecoder(strings.NewReader(string(b)))
+	decoder.DisallowUnknownFields()
+	if e = decoder.Decode(&c); e != nil {
 		return c, e
 	}
 	c.URL = strings.TrimRight(c.URL, "/")

@@ -89,6 +89,17 @@ func evaluate(w []float64) (float64, float64) {
 	return loss / 4096, correct / 4096
 }
 func trainModel(ctx context.Context, base []float64, seed uint64, steps int, paced bool, progress func(int)) ([]float64, error) {
+	duty := 0
+	if paced {
+		duty = 25
+	}
+	return trainWithDuty(ctx, base, seed, steps, duty, progress)
+}
+
+func trainWithDuty(ctx context.Context, base []float64, seed uint64, steps, duty int, progress func(int)) ([]float64, error) {
+	if duty != 0 && duty != 10 && duty != 25 && duty != 50 {
+		return nil, errors.New("invalid CPU duty target")
+	}
 	if !validWeights(base) || steps < 1 || steps > maxSteps || seed == 0 {
 		return nil, errors.New("invalid bounded training task")
 	}
@@ -121,10 +132,10 @@ func trainModel(ctx context.Context, base []float64, seed uint64, steps int, pac
 		if progress != nil && (step%10 == 0 || step == steps-1) {
 			progress(step + 1)
 		}
-		if paced {
+		if duty > 0 {
 			// One training goroutine; aim at <=25% of one logical CPU, with an
 			// additional 5ms inter-batch floor. This is not an OS-enforced power cap.
-			delay := 3 * time.Since(began)
+			delay := time.Duration(100/duty-1) * time.Since(began)
 			if delay < 5*time.Millisecond {
 				delay = 5 * time.Millisecond
 			}

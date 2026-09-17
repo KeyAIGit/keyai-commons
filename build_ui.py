@@ -1,3 +1,4 @@
+raise SystemExit("Legacy v0.1 generator disabled. Use scripts/sync_site.py or scripts/package_release.py.")
 from pathlib import Path
 root=Path(__file__).parent/'src'/'web'
 css='''

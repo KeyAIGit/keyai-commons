@@ -2,6 +2,7 @@ name: CI
 on:
   push:
     branches: [main]
+    tags: ['v*']
   pull_request:
   workflow_dispatch:
 permissions:
@@ -19,13 +20,12 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4, resolved at publication
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           persist-credentials: false
-      - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5, resolved at publication
+      - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff
         with:
-          go-version: stable
-          check-latest: true
+          go-version: '1.27.1'
           cache: false
       - name: Unit tests and static checks
         shell: bash
@@ -42,6 +42,38 @@ jobs:
       - name: Single-host process integration
         if: runner.os == 'Linux'
         run: python3 integration_test.py
-      - name: Check packaging scripts
+      - name: Actual browser controls and mobile layout
         if: runner.os == 'Linux'
-        run: python3 -m py_compile package.py integration_test.py build_ui.py
+        run: |
+          python3 -m pip install 'playwright==1.57.0'
+          python3 -m playwright install --with-deps chromium
+          python3 browser_test.py
+      - name: Check packaging and synchronized website
+        if: runner.os == 'Linux'
+        run: |
+          python3 -m py_compile scripts/package_release.py scripts/sync_site.py integration_test.py browser_test.py
+          cmp src/web/landing.html docs/index.html
+          cmp src/web/landing.html site/index.html
+  release:
+    name: Portable packages
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff
+        with:
+          go-version: '1.27.1'
+          cache: false
+      - name: Build portable clients and checksums
+        run: python3 scripts/package_release.py
+      - name: Publish explicitly experimental release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: gh release create "$RELEASE_TAG" dist-v02/*.zip dist-v02/SHA256SUMS.txt dist-v02/BUILD-MANIFEST.json --verify-tag --prerelease --title "KeyAI Commons $RELEASE_TAG | Network research preview" --notes-file RELEASE_NOTES.md

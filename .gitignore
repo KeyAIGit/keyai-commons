@@ -17,3 +17,8 @@ preview/
 __pycache__/
 *.pyc
 .DS_Store
+
+dist-v02/
+node_modules/
+.venv/
+browser-live/

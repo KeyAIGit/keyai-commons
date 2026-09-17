@@ -1,0 +1,7 @@
+# Replace this hostname with the origin configured in COMMONS_PUBLIC_URL.
+commons.example.org {
+    request_body {
+        max_size 64KB
+    }
+    reverse_proxy 127.0.0.1:7860
+}

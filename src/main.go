@@ -11,6 +11,7 @@ import (
 	"os/signal"
 	"path/filepath"
 	"runtime"
+	"syscall"
 )
 
 //go:embed web/*.html
@@ -50,6 +51,12 @@ func defaultDir(role string) string {
 	return filepath.Join(d, "KeyAICommons", role)
 }
 func main() {
+	if len(os.Args) > 1 && os.Args[1] == "operator" {
+		if e := operatorMain(os.Args[2:]); e != nil {
+			fatal(e)
+		}
+		return
+	}
 	if len(os.Args) > 1 && (os.Args[1] == "version" || os.Args[1] == "--version") {
 		fmt.Printf("KeyAI Commons %s | %s | %s/%s\n", version, runtime.Version(), runtime.GOOS, runtime.GOARCH)
 		return
@@ -65,9 +72,11 @@ func main() {
 	dir := fs.String("data", defaultDir(mode), "private local state directory")
 	listen := fs.String("listen", "127.0.0.1:18741", "coordinator public API listen address")
 	publicURL := fs.String("public-url", "", "public HTTPS origin; loopback HTTP allowed for local testing")
+	operatorKey := fs.String("operator-key", "", "optional Ed25519 public key for signed remote commands")
+	persistence := fs.String("persistence", "local-disk", "local-disk or ephemeral; describes host storage")
 	noBrowser := fs.Bool("no-browser", false, "print local dashboard URL without opening a browser")
 	_ = fs.Parse(args)
-	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
+	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer cancel()
 	switch mode {
 	case "client":
@@ -78,7 +87,7 @@ func main() {
 		defer cleanup()
 		<-c.done.Done()
 	case "coordinator":
-		_, cleanup, e := runCoordinator(ctx, *dir, *listen, *publicURL, *noBrowser)
+		_, cleanup, e := runCoordinatorWithOptions(ctx, *dir, *listen, *publicURL, *noBrowser, CoordinatorOptions{*operatorKey, *persistence})
 		if e != nil {
 			fatal(e)
 		}

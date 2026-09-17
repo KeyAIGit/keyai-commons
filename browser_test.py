@@ -1,4 +1,4 @@
-import pathlib,subprocess,tempfile,json,time
+import pathlib,subprocess,tempfile,json,time,os
 from urllib.parse import urlsplit
 from playwright.sync_api import sync_playwright
 root=pathlib.Path(__file__).resolve().parent
@@ -12,7 +12,7 @@ with tempfile.TemporaryDirectory(prefix='keyai-browser-') as d:
    time.sleep(.1)
   admin=json.loads(op.read_text())['admin_url'];client=json.loads(cl.read_text())['ui_url']
   with sync_playwright() as pw:
-   browser=pw.chromium.launch(headless=True,executable_path='/usr/bin/chromium',args=['--no-sandbox']);ctx=browser.new_context(viewport={'width':1440,'height':1040},device_scale_factor=1)
+   browser=pw.chromium.launch(headless=True,executable_path=os.environ.get('COMMONS_BROWSER'),args=['--no-sandbox']);ctx=browser.new_context(viewport={'width':1440,'height':1040},device_scale_factor=1)
    errors=[];a=ctx.new_page();u=ctx.new_page()
    for page in [a,u]:page.on('pageerror',lambda e:errors.append(str(e)))
    a.goto(admin);u.goto(client);u.wait_for_function("document.getElementById('connection').textContent==='Connected'")
