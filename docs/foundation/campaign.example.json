@@ -1,0 +1,41 @@
+{
+  "schema": "commons.future-campaign.v0-draft",
+  "status": "DESIGN_ONLY_NOT_EXECUTABLE",
+  "enabled": false,
+  "campaign_id": "synthetic-baseline-draft",
+  "workload": {
+    "executable_sha256": null,
+    "model_manifest_sha256": null,
+    "dataset_manifest_sha256": null,
+    "trusted_approvers": []
+  },
+  "data": {
+    "source": "project-generated synthetic data before any external corpus",
+    "license_review_required": true,
+    "shard_size_mib_range": [
+      16,
+      128
+    ],
+    "mirrors": []
+  },
+  "consent": {
+    "default": "off",
+    "type": "standing_revocable_scoped_policy",
+    "new_executable_model_dataset_or_budget_requires_new_approval": true,
+    "notify_before_start": true,
+    "autostart_separate_opt_in": true
+  },
+  "resilience": {
+    "lease_seconds": null,
+    "max_update_staleness": null,
+    "checkpoint_quorum": null,
+    "missing_required_capacity": "pause"
+  },
+  "open_questions": [
+    "choose reviewed trainer and version",
+    "measure memory and communication",
+    "define committee membership and partition resolution",
+    "native notification and cancellation bounds",
+    "independent security review"
+  ]
+}
