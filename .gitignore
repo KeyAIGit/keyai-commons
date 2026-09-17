@@ -22,3 +22,5 @@ dist-v02/
 node_modules/
 .venv/
 browser-live/
+
+/keyai-community

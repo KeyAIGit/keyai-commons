@@ -1,36 +1,41 @@
 # KeyAI Commons
 
-[![CI](https://github.com/KeyAIGit/keyai-commons/actions/workflows/ci.yml/badge.svg)](https://github.com/KeyAIGit/keyai-commons/actions/workflows/ci.yml) · [Русский](README_RU.md) · [Website](https://keyaigit.github.io/keyai-commons/) · [Downloads](https://github.com/KeyAIGit/keyai-commons/releases) · [Roadmap](ROADMAP.md)
+**Community first. Computing later.** An open research project designing a safe, useful and eventually decentralized AI training network on voluntary computers.
 
-**Volunteer computing for shared AI research. Your computer, your permission, your stop button.**
+[Website](https://keyaigit.github.io/keyai-commons/) · [Discussions](https://github.com/KeyAIGit/keyai-commons/discussions) · [Architecture](docs/foundation/ARCHITECTURE.md) · [Русский](docs/foundation/README_RU.md) · [Governance](GOVERNANCE.md)
 
-## Download the v0.2.0 research preview
+## What to do now
 
-Portable Windows x64/ARM64, Linux x64/ARM64, and macOS Intel/Apple Silicon packages are published in [Releases](https://github.com/KeyAIGit/keyai-commons/releases/tag/v0.2.0-pilot.1). Participants do not need Go or Python. Extract completely, read START-HERE.txt, then open START-CLIENT.cmd on Windows or ./start-client.sh on Linux/macOS. LOCAL-DEMO runs a separate local experiment.
+Join the discussion, review the architecture, propose experiments, improve accessibility or help with security review. **No worker installation or training permission is needed to join.** We are not claiming a production decentralized network, a useful language model, guaranteed compute savings, millions of active devices, ownership shares or payouts.
 
-**Unsigned development builds.** Do not disable OS security protections. macOS builds are not notarized. No independent security audit is claimed.
+The public site is white, readable, bilingual and explicitly distinguishes today's community from future computing. Its globe is illustrative, not live telemetry. The notification is a UI demonstration, not an OS notification or a training launch.
 
-An organizer provides an HTTPS coordinator address or a pinned connection code. Enter it in the client, review the network identity, choose CPU pacing and enable a short session. The organizer must separately start a signed round. Neither launching the app nor connecting it grants training permission. Closing a browser tab does not stop the application: use **Pause now** or **Exit application**.
+## Separate community application
 
-> **Actual scope:** a 65-parameter CPU network learning synthetic data, not an LLM, GPU network or ASI. No financial rewards, equity or guaranteed future inference access. 256 registrations, 32 participants per round. Full reference replay duplicates compute; no efficiency or million-node claim is made.
+`src/cmd/community` is a separate build target with **no trainer, coordinator connection, task downloader, automatic update or autostart**. It can record and clear an interest preference on the local computer and explain the project. It does not register a device or subscribe the user to notifications. The application and the website share the new accessible visual style.
 
-## New in 0.2.0
+Developer build (Go 1.27.1 recommended):
 
-- Portable modern-toolchain builds; explicit HTTPS discovery; CPU pacing choices; participant-controlled registration revocation.
-- Optional signed remote operator commands with origin/instance binding, expiry and replay prevention. Private keys remain on the organizer's computer. No remote shell or downloaded code.
-- Abandoned task-slot reassignment, bounded retries, duplicate-registration prevention, constant-time token hash comparison where used, indexed authentication, bounded public history and cached validation metrics.
-- A public status/download website, non-root Docker deployment, persistent-volume Compose template and documented ephemeral-host limitations.
+```sh
+cd src
+go test -race ./cmd/community
+go build -trimpath -o ../keyai-community ./cmd/community
+cd ..
+./keyai-community
+```
 
-The local operator dashboard is still authenticated and loopback-only. Public remote control is disabled unless an operator public key is explicitly configured. Server restart never resumes a round or automatically opens public enrollment.
+On Windows name the output `KeyAI-Community.exe`. The local browser interface is token-protected and listens only on 127.0.0.1. Closing the tab does not terminate the local service; use Exit application. No network training can run in this target. A future computing capability would be a separately reviewed and explicitly authorized product change, not silent activation of this preview.
 
-## Hosting and testing
+## Legacy developer experiment
 
-See [deploy/README.md](deploy/README.md) for HTTPS deployment and signed operator commands. A static website is not a coordinator. A free host using ephemeral storage can lose registration and checkpoint state when restarted; participants must explicitly reconnect. Such a host is an invited experiment, not a durable public service.
+Earlier v0.2 releases and the root `src` command implement a tiny synthetic 65-parameter CPU training experiment. They remain development/reproducibility artifacts, **not today's recommended public participation app**. The existing temporary coordinator is not a permanent decentralized backend. Do not mistake old downloadable EXEs for the new community target or tell users to bypass OS warnings.
 
-Build from source with Go 1.27.1+: `cd src && go test ./... && go build -trimpath -o ../keyai-commons .`. Older development builds remain loopback-only. Packaging: `python scripts/package_release.py`. Binary distributions have no Python dependency.
+The root tests and local demo remain available for researchers. These do not establish GPU/LLM training, economical Internet-scale optimization or independent security certification. Full reference replay duplicates compute.
 
-Tests: `cd src && go test -race -count=1 ./... && go vet ./...`. `python integration_test.py` exercises several participant processes; `python browser_test.py` exercises actual browser controls when Playwright/Chromium are installed. Test scope and host count must always be reported. Historical reports are not evidence for a later revision.
+## Architecture and distribution gates
 
-## Collaborate
+Read [the technical architecture](docs/foundation/ARCHITECTURE.md) for dataset manifests, compatible GPU cohorts, failure recovery, standing consent, decentralization targets and acceptance gates. TensorFlow Federated, Hivemind, Flower and DiLoCo are assessed as references/candidates, not integrated production dependencies in this preview.
 
-Use [Issues](https://github.com/KeyAIGit/keyai-commons/issues), [Discussions](https://github.com/KeyAIGit/keyai-commons/discussions) and pull requests. Read [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md) and [PRIVACY.md](PRIVACY.md). Preserve participant control. Publish measured results rather than promises based on downloads. MIT licensed.
+[Store plan](docs/foundation/STORE_PLAN.md) documents the free Microsoft onboarding route, genuine Private audience testing, identity requirements and remaining Mac/Linux work. No Store listing, verified publisher, signed installer or macOS notarization is implied by preparation files. `packaging/windows/build_msix.py` never signs, installs or submits a package.
+
+[Privacy](docs/foundation/PRIVACY.md), [maintainers](MAINTAINERS.md), [contribution rules](CONTRIBUTING.md). MIT covers this repository's source; future data and model licenses require their own review. A maintainer merge, campaign approval and device permission are separate decisions.
