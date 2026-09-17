@@ -1,0 +1,38 @@
+test_exact_count (test_contracts.ConfigTests.test_exact_count) ... ok
+test_hf_shape (test_contracts.ConfigTests.test_hf_shape) ... ok
+test_invalid_group (test_contracts.ConfigTests.test_invalid_group) ... ok
+test_invalid_kv (test_contracts.ConfigTests.test_invalid_kv) ... ok
+test_invalid_values (test_contracts.ConfigTests.test_invalid_values) ... ok
+test_raw_payload (test_contracts.ConfigTests.test_raw_payload) ... ok
+test_missing_data_blocks_execution (test_contracts.PlanTests.test_missing_data_blocks_execution) ... ok
+test_public_execution_rejected (test_contracts.PlanTests.test_public_execution_rejected) ... ok
+test_wrong_token_count_rejected (test_contracts.PlanTests.test_wrong_token_count_rejected) ... ok
+test_bad_numeric (test_contracts.ProtocolTests.test_bad_numeric) ... ok
+test_conflicting_duplicate (test_contracts.ProtocolTests.test_conflicting_duplicate) ... ok
+test_dropout_still_quorum (test_contracts.ProtocolTests.test_dropout_still_quorum) ... ok
+test_expired (test_contracts.ProtocolTests.test_expired) ... ok
+test_fedavg_special_case (test_contracts.ProtocolTests.test_fedavg_special_case) ... ok
+test_finalized_rejects_new (test_contracts.ProtocolTests.test_finalized_rejects_new) ... ok
+test_nesterov_sign (test_contracts.ProtocolTests.test_nesterov_sign) ... ok
+test_no_double_finalize (test_contracts.ProtocolTests.test_no_double_finalize) ... ok
+test_no_quorum_no_commit (test_contracts.ProtocolTests.test_no_quorum_no_commit) ... ok
+test_optimizer_bad_input (test_contracts.ProtocolTests.test_optimizer_bad_input) ... ok
+test_retry_after_commit (test_contracts.ProtocolTests.test_retry_after_commit) ... ok
+test_retry_idempotent (test_contracts.ProtocolTests.test_retry_idempotent) ... ok
+test_reused_job_different_worker (test_contracts.ProtocolTests.test_reused_job_different_worker) ... ok
+test_stale_and_parent (test_contracts.ProtocolTests.test_stale_and_parent) ... ok
+test_unknown_worker (test_contracts.ProtocolTests.test_unknown_worker) ... ok
+test_weighted_merge (test_contracts.ProtocolTests.test_weighted_merge) ... ok
+test_causality (test_torch_reference.TorchTests.test_causality) ... ok
+test_context_bound (test_torch_reference.TorchTests.test_context_bound) ... ok
+test_exact_small_count (test_torch_reference.TorchTests.test_exact_small_count) ... ok
+test_gradient_finite (test_torch_reference.TorchTests.test_gradient_finite) ... ok
+test_nesterov_matches_pytorch (test_torch_reference.TorchTests.test_nesterov_matches_pytorch) ... ok
+test_optimizer_state_survives_parameter_copy (test_torch_reference.TorchTests.test_optimizer_state_survives_parameter_copy) ... ok
+test_rope_norm (test_torch_reference.TorchTests.test_rope_norm) ... ok
+test_synthetic_split_identity (test_torch_reference.TorchTests.test_synthetic_split_identity) ... ok
+
+----------------------------------------------------------------------
+Ran 33 tests in 0.666s
+
+OK

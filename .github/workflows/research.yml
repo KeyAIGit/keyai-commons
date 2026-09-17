@@ -1,0 +1,40 @@
+name: Research reference
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: research-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  reference:
+    name: Research reference (CPU)
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      PYTHONPATH: research
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Install pinned-version CPU research dependency
+        run: python3 -m pip install 'torch==2.10.0' --index-url https://download.pytorch.org/whl/cpu
+      - name: Reference model, optimization and protocol tests
+        run: python3 -m unittest discover -s research/tests -v
+      - name: Validate the study without enabling unfinished language training
+        run: |
+          python3 -m commons_lab.plan research/configs/study.json
+          set +e
+          python3 -m commons_lab.plan research/configs/study.json --require-ready
+          code=$?
+          set -e
+          test "$code" -eq 2
+      - name: Exact 22M bounded shape and gradient probe
+        run: python3 -m commons_lab.probe --output "$RUNNER_TEMP/model22m-probe.json"
+      - name: Generated-sequence optimizer smoke test, not a WAN benchmark
+        run: python3 -m commons_lab.sanity --method diloco --steps 32 --local-steps 8 --max-seconds 60 --output "$RUNNER_TEMP/diloco-reference.json"

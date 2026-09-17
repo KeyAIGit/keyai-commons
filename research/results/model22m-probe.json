@@ -1,0 +1,33 @@
+{
+  "scope": "one device; FP32; 128-token repeated random batch; shape/gradient/update probe only",
+  "parameters": 22029696,
+  "model": {
+    "vocab_size": 8192,
+    "width": 384,
+    "layers": 12,
+    "heads": 6,
+    "kv_heads": 2,
+    "ff_width": 1024,
+    "context": 512,
+    "rope_theta": 10000.0,
+    "norm_eps": 1e-06
+  },
+  "steps": 3,
+  "losses": [
+    9.050559997558594,
+    8.551023483276367,
+    8.555021286010742
+  ],
+  "elapsed_seconds_including_initialization": 2.1984020690000534,
+  "device": "cpu",
+  "torch": "2.10.0+cpu",
+  "python": "3.13.5",
+  "peak_cuda_allocated_bytes": null,
+  "gpu_6gb_fit_verified": false,
+  "natural_language_training": false,
+  "limitations": [
+    "sequence 512 throughput not measured",
+    "not a held-out-quality result",
+    "no multi-host run"
+  ]
+}

@@ -39,3 +39,9 @@ Read [the technical architecture](docs/foundation/ARCHITECTURE.md) for dataset m
 [Store plan](docs/foundation/STORE_PLAN.md) documents the free Microsoft onboarding route, genuine Private audience testing, identity requirements and remaining Mac/Linux work. No Store listing, verified publisher, signed installer or macOS notarization is implied by preparation files. `packaging/windows/build_msix.py` never signs, installs or submits a package.
 
 [Privacy](docs/foundation/PRIVACY.md), [maintainers](MAINTAINERS.md), [contribution rules](CONTRIBUTING.md). MIT covers this repository's source; future data and model licenses require their own review. A maintainer merge, campaign approval and device permission are separate decisions.
+
+## Research v1: a chosen experiment, not a scale promise
+
+[Start in Russian](docs/research-v1/README_RU.md) | [Decisions](docs/research-v1/DECISIONS.md) | [Experiment and gates](docs/research-v1/EXPERIMENT.md) | [Runnable reference](research/README.md) | [Recorded evidence](research/results/SUMMARY.json).
+
+We selected a 22,029,696-parameter dense decoder and a versioned TinyStories candidate dataset. The executable CPU reference and synthetic comparisons are separate from the public no-compute app. Language-corpus preparation, GPU calibration, full optimizer recovery and physical network tests are still prerequisites. Lower fixture loss or fewer theoretical exchanges is not a distributed speedup result. Store submission and X publication are on hold. Working instructions are recorded in [AGENTS.md](AGENTS.md).

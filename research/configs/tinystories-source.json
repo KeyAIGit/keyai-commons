@@ -1,0 +1,32 @@
+{
+  "repository": "roneneldan/TinyStories",
+  "revision": "f54c09fd23315a6f9c86f9dc80f725de7d8f9c64",
+  "license": "cdla-sharing-1.0",
+  "files": [
+    {
+      "rfilename": "README.md",
+      "blobId": "852d1e5307bae52dd2fd3fb7650b7c90b233297f",
+      "size": 1061
+    },
+    {
+      "rfilename": "TinyStoriesV2-GPT4-train.txt",
+      "blobId": "d0680f3f86d0a6a1c8130617a0765b004716b8a2",
+      "size": 2227753162,
+      "lfs": {
+        "sha256": "6418d412de72888f52b5142c761ac21a582f7d1166f0bfbdb5f03ccfdec90443",
+        "size": 2227753162,
+        "pointerSize": 135
+      }
+    },
+    {
+      "rfilename": "TinyStoriesV2-GPT4-valid.txt",
+      "blobId": "80f0d95b04e0b881b215f62c41de3949b80caee8",
+      "size": 22502601,
+      "lfs": {
+        "sha256": "6874bae9a4c1a4e7edcf0e53b86c17817e9cf881fc75ff2368da457b80c0585d",
+        "size": 22502601,
+        "pointerSize": 133
+      }
+    }
+  ]
+}
