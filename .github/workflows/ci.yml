@@ -1,0 +1,47 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  test:
+    name: Tests (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4, resolved at publication
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5, resolved at publication
+        with:
+          go-version: stable
+          check-latest: true
+          cache: false
+      - name: Unit tests and static checks
+        shell: bash
+        working-directory: src
+        run: |
+          go version
+          go vet ./...
+          go test -count=1 ./...
+          go build -trimpath -o ../keyai-commons .
+      - name: Race detector
+        if: runner.os == 'Linux'
+        working-directory: src
+        run: go test -race -count=1 ./...
+      - name: Single-host process integration
+        if: runner.os == 'Linux'
+        run: python3 integration_test.py
+      - name: Check packaging scripts
+        if: runner.os == 'Linux'
+        run: python3 -m py_compile package.py integration_test.py build_ui.py

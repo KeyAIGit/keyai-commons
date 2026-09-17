@@ -1,0 +1,5 @@
+{
+  "layout_checks_passed": 6,
+  "scope": "static layout rendering of the three shipped interfaces at desktop/mobile widths; scripts removed; no live browser network test",
+  "live_browser_test": "NOT VERIFIED: local network navigation blocked by managed Chromium policy; separate process/API integration tests passed"
+}

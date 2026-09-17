@@ -1,0 +1,66 @@
+{
+  "toolchain": "go version go1.23.2 linux/amd64",
+  "release_state": "experimental; no public coordinator; unsigned",
+  "targets": [
+    {
+      "archive": "KeyAI-Commons-Windows-x64.LOCAL-TEST.zip",
+      "bytes": 2712498,
+      "name": "KeyAI Commons",
+      "version": "0.1.0",
+      "platform": "windows/amd64",
+      "toolchain": "go version go1.23.2 linux/amd64",
+      "local_test_only": true,
+      "publisher_signed": false,
+      "macos_notarized": false,
+      "gpu_training": false,
+      "llm_training": false,
+      "public_coordinator_deployed": false,
+      "sha256": "d1ced529a56358f55f8c2d1492123cb93c9caadaa881a5cf70ed034761ac79e5"
+    },
+    {
+      "archive": "KeyAI-Commons-Linux-x64.LOCAL-TEST.zip",
+      "bytes": 2656602,
+      "name": "KeyAI Commons",
+      "version": "0.1.0",
+      "platform": "linux/amd64",
+      "toolchain": "go version go1.23.2 linux/amd64",
+      "local_test_only": true,
+      "publisher_signed": false,
+      "macos_notarized": false,
+      "gpu_training": false,
+      "llm_training": false,
+      "public_coordinator_deployed": false,
+      "sha256": "dc150bf48a52063a39c244324e73fd00e45ed22d36eee0d716596e5109c05852"
+    },
+    {
+      "archive": "KeyAI-Commons-macOS-arm64.LOCAL-TEST.zip",
+      "bytes": 2516524,
+      "name": "KeyAI Commons",
+      "version": "0.1.0",
+      "platform": "darwin/arm64",
+      "toolchain": "go version go1.23.2 linux/amd64",
+      "local_test_only": true,
+      "publisher_signed": false,
+      "macos_notarized": false,
+      "gpu_training": false,
+      "llm_training": false,
+      "public_coordinator_deployed": false,
+      "sha256": "7e530f60b411d450e4b0e607bf7af4a0d0593a25156a395023892d5dfef42d94"
+    },
+    {
+      "archive": "KeyAI-Commons-macOS-x64.LOCAL-TEST.zip",
+      "bytes": 2687642,
+      "name": "KeyAI Commons",
+      "version": "0.1.0",
+      "platform": "darwin/amd64",
+      "toolchain": "go version go1.23.2 linux/amd64",
+      "local_test_only": true,
+      "publisher_signed": false,
+      "macos_notarized": false,
+      "gpu_training": false,
+      "llm_training": false,
+      "public_coordinator_deployed": false,
+      "sha256": "0936f0cfedf11c67aa7dc3911182d1c1edb6a2a37496f5929337a8d6763d7164"
+    }
+  ]
+}

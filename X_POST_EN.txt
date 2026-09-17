@@ -1,0 +1,1 @@
+Building KeyAI Commons: a voluntary network for shared AI research. Participants control when their computers work; organizers launch bounded training rounds. CPU prototype works locally. Next: cross-network tests. Seeking early testers, not promising AGI or returns.

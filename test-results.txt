@@ -1,0 +1,67 @@
+=== RUN   TestTrainingReallyLearns
+    main_test.go:74: initial loss 0.709433 accuracy 0.5164; final loss 0.079759 accuracy 0.9902
+--- PASS: TestTrainingReallyLearns (0.17s)
+=== RUN   TestDeterministicWorkload
+--- PASS: TestDeterministicWorkload (0.01s)
+=== RUN   TestAnalyticalGradientFiniteDifference
+--- PASS: TestAnalyticalGradientFiniteDifference (0.01s)
+=== RUN   TestRejectInvalidWeights
+--- PASS: TestRejectInvalidWeights (0.00s)
+=== RUN   TestTaskBounds
+--- PASS: TestTaskBounds (0.00s)
+=== RUN   TestCancellationIsPrompt
+--- PASS: TestCancellationIsPrompt (0.02s)
+=== RUN   TestSignaturesAndTaskPolicy
+--- PASS: TestSignaturesAndTaskPolicy (0.01s)
+=== RUN   TestConfigRejectsInsecureRemoteURL
+--- PASS: TestConfigRejectsInsecureRemoteURL (0.00s)
+=== RUN   TestConfigAcceptsPinnedHTTPSAndLoopback
+--- PASS: TestConfigAcceptsPinnedHTTPSAndLoopback (0.00s)
+=== RUN   TestNoWorkWithoutOperatorCommand
+--- PASS: TestNoWorkWithoutOperatorCommand (0.01s)
+=== RUN   TestNoAssignmentWithoutConsent
+--- PASS: TestNoAssignmentWithoutConsent (0.00s)
+=== RUN   TestThreeNodeRoundAndCheckpoint
+--- PASS: TestThreeNodeRoundAndCheckpoint (0.17s)
+=== RUN   TestDropoutDoesNotBlockDeadline
+--- PASS: TestDropoutDoesNotBlockDeadline (0.03s)
+=== RUN   TestRejectForgedUpdate
+--- PASS: TestRejectForgedUpdate (0.01s)
+=== RUN   TestDuplicateResultDoesNotDoubleCount
+--- PASS: TestDuplicateResultDoesNotDoubleCount (0.02s)
+=== RUN   TestServerRestartNeverResumesCampaign
+--- PASS: TestServerRestartNeverResumesCampaign (0.02s)
+=== RUN   TestClientRestartResetsConsent
+--- PASS: TestClientRestartResetsConsent (0.00s)
+=== RUN   TestLocalUIRejectsCSRFAndWrongHost
+--- PASS: TestLocalUIRejectsCSRFAndWrongHost (0.00s)
+=== RUN   TestPublicAPIDoesNotExposeAdmin
+--- PASS: TestPublicAPIDoesNotExposeAdmin (0.01s)
+=== RUN   TestUnauthenticatedNodeDenied
+--- PASS: TestUnauthenticatedNodeDenied (0.00s)
+=== RUN   TestWrongInviteDenied
+--- PASS: TestWrongInviteDenied (0.00s)
+=== RUN   TestOversizedBodyDenied
+--- PASS: TestOversizedBodyDenied (0.00s)
+=== RUN   TestUnknownFieldsDenied
+--- PASS: TestUnknownFieldsDenied (0.00s)
+=== RUN   TestModelHashIntegrityOnRestart
+--- PASS: TestModelHashIntegrityOnRestart (0.00s)
+=== RUN   TestStopRejectsLateResults
+--- PASS: TestStopRejectsLateResults (0.01s)
+=== RUN   TestZeroContributionRoundDoesNotChangeModel
+--- PASS: TestZeroContributionRoundDoesNotChangeModel (0.00s)
+=== RUN   TestNoThirdPartyPackages
+--- PASS: TestNoThirdPartyPackages (0.00s)
+=== RUN   TestFinalizedResultRetryIsIdempotent
+--- PASS: TestFinalizedResultRetryIsIdempotent (0.03s)
+=== RUN   TestPausedClientCannotTrain
+--- PASS: TestPausedClientCannotTrain (0.01s)
+=== RUN   TestClientPauseStopsRunningTask
+--- PASS: TestClientPauseStopsRunningTask (0.08s)
+=== RUN   TestCoordinatorLossStopsRunningTask
+--- PASS: TestCoordinatorLossStopsRunningTask (0.08s)
+=== RUN   TestOldBuildCannotEnrollOverInternet
+--- PASS: TestOldBuildCannotEnrollOverInternet (0.00s)
+PASS
+ok  	keyai-commons	1.713s
