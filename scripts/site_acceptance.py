@@ -43,6 +43,7 @@ with sync_playwright() as pw:
             page.set_viewport_size({'width':width,'height':900});page.wait_for_timeout(70)
             check(f'No page overflow: {lang} {width}px',page.evaluate('document.documentElement.scrollWidth <= innerWidth+1'))
             check(f'All text fits hero: {lang} {width}px',page.locator('h1').evaluate('(e)=>e.scrollWidth <= e.clientWidth+1'))
+            check(f'Network annotations fit frame: {lang} {width}px',page.evaluate("()=>{const h=document.querySelector('.hero').getBoundingClientRect();return [...document.querySelectorAll('.node-label,.visual-top,.visual-caption,.visual-tools')].every(e=>{const r=e.getBoundingClientRect();return r.left>=h.left-1 && r.right<=h.right+1})}"))
         check(f'Semantic main, title and download landmark: {lang}',page.locator('main').count()==1 and page.locator('h1').count()==1 and page.locator('#download').count()==1)
     page.set_viewport_size({'width':390,'height':844});page.evaluate('scrollTo(0,0)');page.screenshot(path=str(OUT/'mobile-ru.png'))
     page.locator('#language').click();page.screenshot(path=str(OUT/'mobile-en.png'))
