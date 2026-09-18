@@ -1,0 +1,1 @@
+{"file_sha256":"659168b8c41c920727b241fd20bffebf9ace10ba3c54a48c4c40359e28afdd1e","implementation":"tokenizers","special_tokens":["<unk>","<bos>","<eos>","<pad>"],"train_stories":50000,"training_ids_sha256":"2d51e710c2e55e6acb390969f83b3c28264bf4a3d23348bd65a813f4d9cc3cfe","unicode_version":"15.0.0","version":"0.22.1","vocab_size":8192}

@@ -45,3 +45,7 @@ Read [the technical architecture](docs/foundation/ARCHITECTURE.md) for dataset m
 [Start in Russian](docs/research-v1/README_RU.md) | [Decisions](docs/research-v1/DECISIONS.md) | [Experiment and gates](docs/research-v1/EXPERIMENT.md) | [Runnable reference](research/README.md) | [Recorded evidence](research/results/SUMMARY.json).
 
 We selected a 22,029,696-parameter dense decoder and a versioned TinyStories candidate dataset. The executable CPU reference and synthetic comparisons are separate from the public no-compute app. Language-corpus preparation, GPU calibration, full optimizer recovery and physical network tests are still prerequisites. Lower fixture loss or fewer theoretical exchanges is not a distributed speedup result. Store submission and X publication are on hold. Working instructions are recorded in [AGENTS.md](AGENTS.md).
+
+## Local G1 preparation completed
+
+[Data/recovery implementation](docs/research-v1/G1_DATA_AND_RESUME.md) and [measured evidence](research/results/g1-v1/SUMMARY.json): the fixed corpus and 8192-entry tokenizer are prepared; 58 research tests pass locally; exact 22M FP16 calibration and fresh-process full-state recovery ran on the owner RTX5070. This is not a full G1 quality screen, independent machines or a WAN speedup. See the report for remaining data-quality and experiment gates. No public compute, Store release or X post was enabled.
