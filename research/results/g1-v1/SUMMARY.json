@@ -1,0 +1,295 @@
+{
+  "schema": 1,
+  "base_commit": "be5a9fb1aff6d25515564d6a16ad5701d6d54960",
+  "recorded_utc": "2026-09-18T00:55:34.721402+00:00",
+  "stage": "LOCAL_DATA_AND_RECOVERY_PROVEN; FULL_G1_QUALITY_SCREEN_PENDING",
+  "scope": "One physical owner PC, WSL Linux, RTX5070. Four logical learners run sequentially in one GPU process; recovery restarts into a fresh process. Not a multi-host network.",
+  "tests_passed": 58,
+  "tests_skipped": 0,
+  "dataset": {
+    "manifest_sha256": "b2f5af82189132850e556dd89db9ba1d7cd6ce41ed0d8d2ff8a4483dbe88fab3",
+    "tokenizer": {
+      "file_sha256": "659168b8c41c920727b241fd20bffebf9ace10ba3c54a48c4c40359e28afdd1e",
+      "implementation": "tokenizers",
+      "special_tokens": [
+        "<unk>",
+        "<bos>",
+        "<eos>",
+        "<pad>"
+      ],
+      "train_stories": 50000,
+      "training_ids_sha256": "2d51e710c2e55e6acb390969f83b3c28264bf4a3d23348bd65a813f4d9cc3cfe",
+      "unicode_version": "15.0.0",
+      "version": "0.22.1",
+      "vocab_size": 8192
+    },
+    "index_counts": {
+      "duplicates": {
+        "TinyStoriesV2-GPT4-train.txt": 1,
+        "TinyStoriesV2-GPT4-valid.txt": 0
+      },
+      "omitted_final_fragments": {
+        "TinyStoriesV2-GPT4-train.txt": [
+          {
+            "normalized_bytes": 556,
+            "reason": "unterminated_upstream_final_fragment",
+            "sha256": "6ac7521a77063129e12c00c7425e788cf9645fa4f1efa1efecfb6e099ac7bd1b"
+          }
+        ],
+        "TinyStoriesV2-GPT4-valid.txt": [
+          {
+            "normalized_bytes": 593,
+            "reason": "unterminated_upstream_final_fragment",
+            "sha256": "00b1085ad31f6b2f10c8f495c4f7c7daf7641a94268e51573e9f0fed17d69db9"
+          }
+        ]
+      },
+      "source_stories": {
+        "TinyStoriesV2-GPT4-train.txt": 2717494,
+        "TinyStoriesV2-GPT4-valid.txt": 27629
+      },
+      "train_excluded_by_final": 0,
+      "unique": {
+        "dev": 27370,
+        "test": 27629,
+        "train": 2690123
+      }
+    },
+    "splits": {
+      "dev": {
+        "stories": 27370,
+        "ids": 5396092,
+        "windows": 10539,
+        "scored_targets_per_epoch": 5395968,
+        "tail_unscored_ids": 123,
+        "chunk_files": 6,
+        "bytes": 10792184
+      },
+      "test": {
+        "stories": 27629,
+        "ids": 5415681,
+        "windows": 10577,
+        "scored_targets_per_epoch": 5415424,
+        "tail_unscored_ids": 256,
+        "chunk_files": 6,
+        "bytes": 10831362
+      },
+      "train": {
+        "stories": 2690123,
+        "ids": 530947147,
+        "windows": 1037006,
+        "scored_targets_per_epoch": 530947072,
+        "tail_unscored_ids": 74,
+        "chunk_files": 507,
+        "bytes": 1061894294
+      }
+    },
+    "full_story_ledger_integrity_and_exact_disjointness": "PASS",
+    "near_duplicate_audit": "NOT_PERFORMED",
+    "final_test_model_evaluation": "NOT_PERFORMED",
+    "timing": {
+      "index": {
+        "returncode": 0,
+        "seconds": 250.56660122799985
+      },
+      "tokenizer": {
+        "returncode": 0,
+        "seconds": 9.894129858001179
+      },
+      "encode": {
+        "returncode": 0,
+        "seconds": 424.60102873899996
+      }
+    },
+    "sources_scope_note": "source.scope preserves the original metadata-only preregistration; these corpus bytes are now verified locally."
+  },
+  "calibration": {
+    "all_measured_losses_finite": true,
+    "checkpoint": {
+      "bytes": 528816320,
+      "file": "calibrated.safetensors",
+      "sha256": "f977f378e9d98f4ba4338180db8386e8222ec15eff08fd9efbb9ce1e58f64849"
+    },
+    "dev_nll_after": 4.456506669521332,
+    "dev_nll_before": 9.090832591056824,
+    "dev_probe_windows": 16,
+    "environment": {
+      "attention": "MATH SDPA control",
+      "cuda_runtime": "13.0",
+      "deterministic_algorithms": true,
+      "gpu": "NVIDIA GeForce RTX 5070",
+      "gpu_total_bytes": 12820480000,
+      "precision": "FP16 autocast, FP32 parameters, dynamic GradScaler",
+      "process_memory_fraction_cap": 0.7,
+      "python": "3.12.14",
+      "tf32": false,
+      "torch": "2.13.0+cu130"
+    },
+    "final_train_loss": 4.517999053001404,
+    "grad_scaler": {
+      "_growth_tracker": 120,
+      "backoff_factor": 0.5,
+      "growth_factor": 2.0,
+      "growth_interval": 2000,
+      "scale": 1024.0
+    },
+    "manifest_sha256": "b2f5af82189132850e556dd89db9ba1d7cd6ce41ed0d8d2ff8a4483dbe88fab3",
+    "measured_optimizer_steps": 100,
+    "measured_seconds": 26.290919346998635,
+    "measured_target_tokens": 409600,
+    "measured_target_tokens_per_second": 15579.523659630406,
+    "model_parameters": 22029696,
+    "notes": [
+      "Time includes local data gathering and GPU transfer, not checkpoint/evaluation.",
+      "Math attention chosen for a reproducible control, not the fastest available kernel.",
+      "Only GPU allocated/reserved memory measured; not total system memory or energy.",
+      "100 timed steps are not an end-to-end language quality or speedup claim."
+    ],
+    "peak_cuda_allocated_bytes": 1212644864,
+    "peak_cuda_reserved_bytes": 1310720000,
+    "periodic_sensors": [
+      {
+        "name": "NVIDIA GeForce RTX 5070",
+        "power_w": "78.86",
+        "temperature_c": "43",
+        "used_memory_mib": "2884",
+        "utilization_percent": "19"
+      },
+      {
+        "name": "NVIDIA GeForce RTX 5070",
+        "power_w": "80.51",
+        "temperature_c": "44",
+        "used_memory_mib": "2884",
+        "utilization_percent": "24"
+      },
+      {
+        "name": "NVIDIA GeForce RTX 5070",
+        "power_w": "84.13",
+        "temperature_c": "44",
+        "used_memory_mib": "3028",
+        "utilization_percent": "23"
+      },
+      {
+        "name": "NVIDIA GeForce RTX 5070",
+        "power_w": "79.77",
+        "temperature_c": "44",
+        "used_memory_mib": "3005",
+        "utilization_percent": "23"
+      },
+      {
+        "name": "NVIDIA GeForce RTX 5070",
+        "power_w": "80.16",
+        "temperature_c": "45",
+        "used_memory_mib": "2954",
+        "utilization_percent": "25"
+      }
+    ],
+    "schema": 1,
+    "scope": "One physical RTX 5070; one local learner; real TinyStories train/dev; NOT G1 quality screen, RTX2060 compatibility, WAN or distributed speedup.",
+    "start_sensor": {
+      "name": "NVIDIA GeForce RTX 5070",
+      "power_w": "21.18",
+      "temperature_c": "36",
+      "used_memory_mib": "2033",
+      "utilization_percent": "3"
+    },
+    "targets_per_local_step": 4096,
+    "total_processed_targets": 491520,
+    "training_config": {
+      "accumulation": 4,
+      "attention": "math",
+      "local_steps": 8,
+      "lr": 0.0004,
+      "method": "single",
+      "microbatch": 2,
+      "momentum": 0.9,
+      "outer_lr": 0.7,
+      "precision": "fp16",
+      "seed": 11,
+      "total_tokens": 16777216,
+      "workers": 1
+    },
+    "wall_seconds_including_validation_and_checkpoint": 36.20692428999973,
+    "warmup_optimizer_steps": 20
+  },
+  "gpu_resume": {
+    "checkpoint_after_global_step": 7,
+    "child_pid": 4376,
+    "compared": [
+      "server and learner parameters",
+      "all inner Adam states",
+      "outer anchor and momentum",
+      "AMP scalers",
+      "data cursor and token counts",
+      "accepted outer position",
+      "Python and CPU/CUDA RNG"
+    ],
+    "continued_global_steps": 2,
+    "data_ledger_sha256": "44ab5e2089378a05aad016197830a21ef7be8602daa207818602169b62c32349",
+    "end_global_step": 9,
+    "end_outer_updates": 1,
+    "end_token_count": 147456,
+    "environment": {
+      "attention": "MATH SDPA control",
+      "cuda_runtime": "13.0",
+      "deterministic_algorithms": true,
+      "gpu": "NVIDIA GeForce RTX 5070",
+      "gpu_total_bytes": 12820480000,
+      "precision": "FP16 autocast, FP32 parameters, dynamic GradScaler",
+      "process_memory_fraction_cap": 0.7,
+      "python": "3.12.14",
+      "tf32": false,
+      "torch": "2.13.0+cu130"
+    },
+    "expected_losses": [
+      8.257437825202942,
+      8.152350544929504
+    ],
+    "full_state_bitwise_equal": true,
+    "losses_bitwise_equal": true,
+    "manifest_sha256": "b2f5af82189132850e556dd89db9ba1d7cd6ce41ed0d8d2ff8a4483dbe88fab3",
+    "mismatched_fields": [],
+    "model_parameters": 22029696,
+    "parent_pid": 4364,
+    "resumed_losses": [
+      8.257437825202942,
+      8.152350544929504
+    ],
+    "schema": 1,
+    "scope": "Fresh-process local CUDA FP16 recovery, exact 22M model, four sequential logical learners, checkpoint inside H8 round then cross outer update; NOT separate computers or a hard power-loss test.",
+    "training_config": {
+      "accumulation": 4,
+      "attention": "math",
+      "local_steps": 8,
+      "lr": 0.0004,
+      "method": "diloco",
+      "microbatch": 2,
+      "momentum": 0.9,
+      "outer_lr": 0.7,
+      "precision": "fp16",
+      "seed": 11,
+      "total_tokens": 16777216,
+      "workers": 4
+    },
+    "wall_seconds": 39.5440477079992
+  },
+  "code_sha256": {
+    "research/commons_lab/data.py": "1e395b399956084c18238de85710928a33d859414081c063bb595dc4e7f5e219",
+    "research/commons_lab/fetch_data.py": "12b41e7c0fa32523cad86275e61b32032582d5f386030eea681dd79bbe322b79",
+    "research/commons_lab/engine.py": "178933469c0683bbef857818b3dd81ea5f70234a5abb26fe1b397fdeb9d1f136",
+    "research/commons_lab/snapshot.py": "d0927a8987ee700c39c77f085335b59bdd8c9928c6a7de899de4721b234e4631",
+    "research/commons_lab/gpu_calibration.py": "7b986b8698a0b12ec65389ec5f9d260cc64d7252c77b8d428ae546ac61491bca",
+    "research/commons_lab/model.py": "5ee23c433096e9acceacc4ba68b213e2217770297a633d8d4187a4d8abe681e4",
+    "research/commons_lab/config.py": "39380bb583b73a7ab69c55706eb02a79c49cbf0d767bd9245992fcb58d3cddd1"
+  },
+  "remaining": [
+    "near-duplicate and broader data-quality audit",
+    "review and execution of full matched-token G1 screen",
+    "three-seed confirmation",
+    "measured separate-physical-host and WAN behavior",
+    "independent security review"
+  ],
+  "public_training_enabled": false,
+  "store_or_x_published": false,
+  "raw_data_tokenizer_and_weights_uploaded": false
+}

@@ -18,12 +18,16 @@ jobs:
       PYTHONPATH: research
       OMP_NUM_THREADS: '2'
       MKL_NUM_THREADS: '2'
+      TOKENIZERS_PARALLELISM: 'false'
+      RAYON_NUM_THREADS: '2'
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           persist-credentials: false
       - name: Install pinned-version CPU research dependency
-        run: python3 -m pip install 'torch==2.10.0' --index-url https://download.pytorch.org/whl/cpu
+        run: |
+          python3 -m pip install 'torch==2.10.0' --index-url https://download.pytorch.org/whl/cpu
+          python3 -m pip install -r research/requirements-data.txt
       - name: Reference model, optimization and protocol tests
         run: python3 -m unittest discover -s research/tests -v
       - name: Validate the study without enabling unfinished language training

@@ -1,0 +1,4 @@
+# Research-only extras. Public Go applications do not import these.
+numpy==2.2.6
+tokenizers==0.22.1
+safetensors==0.7.0
